@@ -1,65 +1,53 @@
-import sys
-import os
 import streamlit as st
+from grammar_checker import grammar_agent
+from data_summary import data_agent
+from general_agent import general_agent
 
-# -----------------------------
-# اضافه کردن مسیر پروژه به sys.path
-# -----------------------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-if BASE_DIR not in sys.path:
-    sys.path.append(BASE_DIR)
+st.set_page_config(page_title="CodeLingoo — Mini Agent", layout="wide")
 
-from agents.grammar.grammar_checker import check_and_correct
-from agents.data.data_summary import summarize_csv
+st.title("CodeLingoo — Mini Agent (Grammar, Data & Q&A)")
 
-# -----------------------------
-# تنظیمات اولیه Streamlit
-# -----------------------------
-st.set_page_config(page_title="CodeLingoo Mini-Agent", layout="centered")
-st.title("CodeLingoo — Mini Agent (Grammar & Data)")
+# Sidebar info
+st.sidebar.header("About")
+st.sidebar.info(
+    "🚀 A simple AI agent app with three tools:\n\n"
+    "- ✏️ Grammar Helper\n"
+    "- 📊 Data Analyzer\n"
+    "- ❓ Q&A Agent"
+)
 
-# -----------------------------
-# تب‌ها
-# -----------------------------
-tabs = st.tabs(["Grammar Helper", "Data Analyzer"])
+# Tabs
+tab1, tab2, tab3 = st.tabs(["Grammar Helper", "Data Analyzer", "Q&A Agent"])
 
-# -----------------------------
-# تب ۱: Grammar Helper
-# -----------------------------
-with tabs[0]:
-    st.header("Grammar Helper")
-    text = st.text_area("Paste English text here", height=150)
-
-    if st.button("Check & Correct (Grammar)"):
-        if not text.strip():
-            st.warning("Please enter some English text.")
+# Tab 1: Grammar Helper
+with tab1:
+    st.subheader("Grammar Helper")
+    text_input = st.text_area("Enter text to check grammar:")
+    if st.button("Check Grammar", key="grammar"):
+        if text_input.strip():
+            result = grammar_agent(text_input)
+            st.write("### ✅ Corrected Text:")
+            st.success(result)
         else:
-            corrected, issues = check_and_correct(text)
+            st.warning("Please enter some text!")
 
-            st.subheader("Corrected Text")
-            st.write(corrected)
+# Tab 2: Data Analyzer
+with tab2:
+    st.subheader("Data Analyzer")
+    uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
+    if uploaded_file is not None:
+        result = data_agent(uploaded_file)
+        st.write("### 📊 Data Summary:")
+        st.write(result)
 
-            st.subheader("Top issues (first 5)")
-            for i, it in enumerate(issues[:5], 1):
-                st.write(f"{i}. {it['message']} — Suggestions: {it['suggestions']}")
-
-# -----------------------------
-# تب ۲: Data Analyzer (CSV)
-# -----------------------------
-with tabs[1]:
-    st.header("Data Analyzer (CSV)")
-    uploaded = st.file_uploader("Upload CSV file", type=["csv"])
-
-    if uploaded is not None:
-        st.info("Processing CSV...")
-        summary = summarize_csv(uploaded)
-
-        st.write("Basic info:")
-        st.json({
-            "rows": summary["rows"],
-            "columns": summary["columns"],
-            "head": summary["head"]
-        })
-
-        if summary.get("output_plot"):
-            st.image(summary["output_plot"], caption="Survival by Sex", use_column_width=True)
+# Tab 3: Q&A Agent
+with tab3:
+    st.subheader("Q&A Agent")
+    question = st.text_input("Ask a question (e.g. 'Who is Ada Lovelace?')")
+    if st.button("Ask", key="qa"):
+        if question.strip():
+            answer = general_agent(question)
+            st.write("### 🤖 Answer:")
+            st.info(answer)
+        else:
+            st.warning("Please enter a question!")
