@@ -1,5 +1,5 @@
 import streamlit as st
-from agents.grammar.grammar_checker import grammar_agent
+from agents.grammar.grammar_checker import check_and_correct
 from agents.data.data_summary import data_summary_agent
 from data_summary import data_agent
 from general_agent import general_agent
