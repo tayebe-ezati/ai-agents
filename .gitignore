@@ -1,6 +1,11 @@
+# Python venv
+venv/
 .venv/
+
+# Environment variables
+.env
+
+# Python cache
 __pycache__/
 *.pyc
-outputs/
-.streamlit/
-.ipynb_checkpoints/
+*.pyo
