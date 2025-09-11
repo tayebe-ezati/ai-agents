@@ -10,7 +10,6 @@ def check_and_correct(text: str) -> Tuple[str, List[Dict]]:
         tool = language_tool_python.LanguageTool('en-US')
         matches = tool.check(text)
         corrected = tool.correct(text)
-
         issues = [
             {"message": m.message, "suggestions": m.replacements}
             for m in matches

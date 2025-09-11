@@ -22,7 +22,7 @@ tab1, tab2, tab3 = st.tabs(["Grammar Helper", "Data Analyzer", "Q&A Agent"])
 # Tab 1: Grammar Helper
 with tab1:
     st.subheader("Grammar Helper")
-    text_input = st.text_area("Enter text to check grammar:")
+    text_input = st.text_area("Enter text to check grammar:", height=150)
     if st.button("Check Grammar", key="grammar"):
         if text_input.strip():
             try:
@@ -62,11 +62,12 @@ with tab2:
 # Tab 3: Q&A Agent
 with tab3:
     st.subheader("Q&A Agent")
-    question = st.text_input("Ask a question (e.g. 'Who is Ada Lovelace?')")
+    question = st.text_input("Ask a question (e.g., 'Who is Ada Lovelace?')")
+    context = st.text_area("Optional: Provide context for the question", height=100)
     if st.button("Ask", key="qa"):
         if question.strip():
             try:
-                answer = general_agent(question)
+                answer = general_agent(question, context if context.strip() else None)
                 st.write("### 🤖 Answer:")
                 st.info(answer)
             except Exception as e:
