@@ -1,7 +1,6 @@
 import streamlit as st
 from agents.grammar.grammar_checker import check_and_correct as grammar_agent
 from agents.data.data_summary import summarize_csv as data_agent
-from data_summary import data_agent
 from general_agent import general_agent
 
 st.set_page_config(page_title="CodeLingoo — Mini Agent", layout="wide")
@@ -41,7 +40,6 @@ with tab1:
         else:
             st.warning("Please enter some text!")
 
-
 # Tab 2: Data Analyzer
 with tab2:
     st.subheader("Data Analyzer")
@@ -67,8 +65,11 @@ with tab3:
     question = st.text_input("Ask a question (e.g. 'Who is Ada Lovelace?')")
     if st.button("Ask", key="qa"):
         if question.strip():
-            answer = general_agent(question)
-            st.write("### 🤖 Answer:")
-            st.info(answer)
+            try:
+                answer = general_agent(question)
+                st.write("### 🤖 Answer:")
+                st.info(answer)
+            except Exception as e:
+                st.error(f"Error answering question: {str(e)}")
         else:
             st.warning("Please enter a question!")
