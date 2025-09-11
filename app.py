@@ -2,75 +2,59 @@ import streamlit as st
 from agents.grammar.grammar_checker import check_and_correct as grammar_agent
 from agents.data.data_summary import summarize_csv as data_agent
 from general_agent import general_agent
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 st.set_page_config(page_title="CodeLingoo — Mini Agent", layout="wide")
-
 st.title("CodeLingoo — Mini Agent (Grammar, Data & Q&A)")
 
-# Sidebar info
-st.sidebar.header("About")
-st.sidebar.info(
-    "🚀 A simple AI agent app with three tools:\n\n"
-    "- ✏️ Grammar Helper\n"
-    "- 📊 Data Analyzer\n"
-    "- ❓ Q&A Agent"
-)
-
-# Tabs
 tab1, tab2, tab3 = st.tabs(["Grammar Helper", "Data Analyzer", "Q&A Agent"])
 
-# Tab 1: Grammar Helper
 with tab1:
-    st.subheader("Grammar Helper")
-    text_input = st.text_area("Enter text to check grammar:", height=150)
-    if st.button("Check Grammar", key="grammar"):
-        if text_input.strip():
-            try:
-                corrected, issues = grammar_agent(text_input)
-                st.write("### ✅ Corrected Text:")
-                st.success(corrected)
-                if issues:
-                    st.write("### ⚠️ Grammar Issues:")
-                    for issue in issues:
-                        st.write(f"- {issue['message']}: Suggestions: {', '.join(issue['suggestions']) or 'None'}")
-                else:
-                    st.info("No grammar issues found!")
-            except Exception as e:
-                st.error(f"Error checking grammar: {str(e)}")
-        else:
-            st.warning("Please enter some text!")
-
-# Tab 2: Data Analyzer
-with tab2:
-    st.subheader("Data Analyzer")
-    uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
-    if uploaded_file is not None:
+    st.header("Grammar Helper")
+    logger.info("Rendering Grammar Helper tab")
+    text_input = st.text_area("Enter text to check grammar:", "I has two cat.")
+    if st.button("Check Grammar"):
+        logger.info(f"Checking grammar for: {text_input}")
         try:
-            result = data_agent(uploaded_file)
-            st.write("### 📊 Data Summary:")
-            st.write(f"**Rows:** {result['rows']}")
-            st.write(f"**Columns:** {result['columns']}")
-            st.write("**First 3 Rows:**")
-            st.write(result['head'])
-            if "output_plot" in result:
-                st.image(result["output_plot"], caption="Data Visualization")
-            else:
-                st.info("No visualization generated for this dataset.")
+            corrected_text, issues = grammar_agent(text_input)
+            st.write("**Corrected Text**:")
+            st.write(corrected_text)
+            st.write("**Issues Found**:")
+            for issue in issues:
+                st.write(f"- {issue}")
         except Exception as e:
-            st.error(f"Error processing CSV file: {str(e)}")
+            logger.error(f"Grammar check failed: {str(e)}")
+            st.error(f"Grammar check failed: {str(e)}")
 
-# Tab 3: Q&A Agent
+with tab2:
+    st.header("Data Analyzer")
+    logger.info("Rendering Data Analyzer tab")
+    uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
+    if uploaded_file:
+        logger.info(f"Processing uploaded file: {uploaded_file.name}")
+        try:
+            summary, fig = data_agent(uploaded_file)
+            st.write("**Summary**:")
+            st.write(summary)
+            st.pyplot(fig)
+        except Exception as e:
+            logger.error(f"Data analysis failed: {str(e)}")
+            st.error(f"Data analysis failed: {str(e)}")
+
 with tab3:
-    st.subheader("Q&A Agent")
-    question = st.text_input("Ask a question (e.g., 'Who is Ada Lovelace?')")
-    context = st.text_area("Optional: Provide context for the question", height=100)
-    if st.button("Ask", key="qa"):
-        if question.strip():
-            try:
-                answer = general_agent(question, context if context.strip() else None)
-                st.write("### 🤖 Answer:")
-                st.info(answer)
-            except Exception as e:
-                st.error(f"Error answering question: {str(e)}")
-        else:
-            st.warning("Please enter a question!")
+    st.header("Q&A Agent")
+    logger.info("Rendering Q&A Agent tab")
+    question = st.text_input("Ask a question:", "Who is Ada Lovelace?")
+    context = st.text_area("Optional context:", "Ada Lovelace was a mathematician...")
+    if st.button("Get Answer (Q&A Agent)"):
+        logger.info(f"Processing Q&A: question={question}, context={context}")
+        try:
+            answer = general_agent(question, context)
+            st.write(f"**Answer**: {answer}")
+        except Exception as e:
+            logger.error(f"Q&A failed: {str(e)}")
+            st.error(f"Q&A failed: {str(e)}")
