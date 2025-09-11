@@ -21,13 +21,14 @@ def summarize_csv(file):
         summary += f"Total Rows: {len(df)}\n"
         summary += f"Total Columns: {len(df.columns)}\n"
         summary += "\nNumeric Columns Statistics:\n"
-        summary += df.describe().to_string()
+        numeric_summary = df.describe()
+        summary += numeric_summary.to_string()
         if df.select_dtypes(include=['object']).columns.any():
             summary += "\n\nCategorical Columns Unique Values:\n"
             for col in df.select_dtypes(include=['object']).columns:
                 summary += f"{col}: {df[col].nunique()} unique values\n"
 
-        # Generate bar plot (use 'release_year' for Netflix dataset)
+        # Generate bar plot (prefer 'release_year' for Netflix dataset)
         plt.figure(figsize=(10, 6))
         if 'release_year' in df.columns:
             logger.info("Plotting bar chart for 'release_year'...")
