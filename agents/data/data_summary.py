@@ -37,9 +37,9 @@ def summarize_csv(file):
         # Generate bar plot
         plt.figure(figsize=(10, 6))
         plot_created = False
-        # Try numeric columns first (e.g., 'release_year' for Netflix)
+        # Try numeric columns first
         for col in numeric_cols:
-            if df[col].nunique() > 1:  # Ensure enough unique values for meaningful plot
+            if df[col].nunique() > 1:  # Ensure enough unique values
                 logger.info(f"Plotting bar chart for numeric column '{col}'...")
                 df[col].value_counts().sort_index().plot(kind='bar')
                 plt.title(f"Distribution of {col}")
