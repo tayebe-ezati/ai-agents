@@ -53,7 +53,8 @@ with tab3:
     if st.button("Get Answer (Q&A Agent)"):
         logger.info(f"Processing Q&A: question={question}, context={context}")
         try:
-            answer = general_agent(question, context)
+            with st.spinner("Loading Q&A model... This may take a moment on first use."):
+                answer = general_agent(question, context)
             st.write(f"**Answer**: {answer}")
         except Exception as e:
             logger.error(f"Q&A failed: {str(e)}")
