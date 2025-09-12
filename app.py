@@ -35,15 +35,20 @@ with tab2:
     logger.info("Rendering Data Analyzer tab")
     uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
     if uploaded_file:
-        logger.info(f"Processing uploaded file: {uploaded_file.name}")
-        try:
-            summary, fig = data_agent(uploaded_file)
-            st.write("**Summary**:")
-            st.write(summary)
-            st.pyplot(fig)
-        except Exception as e:
-            logger.error(f"Data analysis failed: {str(e)}")
-            st.error(f"Data analysis failed: {str(e)}")
+        if uploaded_file.size > 10 * 1024 * 1024:  # Limit to 10MB
+            st.error("File too large. Please upload a CSV under 10MB.")
+        else:
+            logger.info(f"Processing uploaded file: {uploaded_file.name}")
+            try:
+                summary, fig = data_agent(uploaded_file)
+                st.write("**Summary**:")
+                st.write(summary)
+                st.pyplot(fig)
+            except Exception as e:
+                logger.error(f"Data analysis failed: {str(e)}")
+                st.error(f"Data analysis failed: Please ensure the CSV is valid and try again.")
+    else:
+        st.info("Please upload a CSV file to analyze.")
 
 with tab3:
     st.header("Q&A Agent")
