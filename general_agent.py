@@ -17,7 +17,7 @@ def initialize_pipeline():
                 "question-answering",
                 model="distilbert-base-uncased-distilled-squad",
                 revision="main",
-                model_kwargs={"cache_dir": "/content/model_cache"}
+                # model_kwargs={"cache_dir": "/content/model_cache"}  # Comment out or change to {"cache_dir": "./model_cache"}
             )
             logger.info("QA pipeline initialized successfully.")
         except Exception as e:
