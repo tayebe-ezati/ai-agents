@@ -13,7 +13,7 @@ def summarize_csv(file):
     """
     try:
         logger.info("Reading CSV file...")
-        df = pd.read_csv(file, encoding='utf-8', errors='ignore')  # Updated line
+        df = pd.read_csv(file, encoding='utf-8')  # Fixed: Removed invalid 'errors' param
         logger.info(f"CSV loaded with columns: {df.columns.tolist()}")
 
         # Generate summary
