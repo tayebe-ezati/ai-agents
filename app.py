@@ -53,14 +53,15 @@ with tab2:
 with tab3:
     st.header("Q&A Agent")
     logger.info("Rendering Q&A Agent tab")
-    question = st.text_input("Ask a question:", "Who is Ada Lovelace?")
-    context = st.text_area("Optional context:", "Ada Lovelace was a mathematician...")
+    question = st.text_input("Ask a question:", "Who is the president of France?")
+    context = st.text_area("Optional context (leave blank for general knowledge):", "")
     if st.button("Get Answer (Q&A Agent)"):
         logger.info(f"Processing Q&A: question={question}, context={context}")
         try:
-            with st.spinner("Loading Q&A model... This may take a moment on first use."):
-                answer = general_agent(question, context)
-            st.write(f"**Answer**: {answer}")
+            with st.spinner("Generating answer... This may take a moment on first use."):
+                answer = general_agent(question, context or None)
+            st.write("**Answer**:")
+            st.write(answer)
         except Exception as e:
             logger.error(f"Q&A failed: {str(e)}")
             st.error(f"Q&A failed: {str(e)}")
